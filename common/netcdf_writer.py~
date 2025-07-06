@@ -1,0 +1,94 @@
+import xarray as xr
+import numpy as np
+from datetime import datetime
+
+class DatasetToNetcdf:
+    """
+    NetCDF output base class (for both analytical and numerical).
+    Includes units and description for each variable.
+    """
+
+    PLANET_TO_G = {
+        "Earth": 9.810,
+        "Mars": 3.720,
+        # Add other planets as needed
+    }
+
+    def __init__(self, results: dict, params: dict):
+        # Required main variables
+        self.u_bar = results["u_bar"]
+        self.theta_bar = results["theta_bar"]
+        self.altitude = results["altitude"]
+        self.time = results["time"]
+
+        self.planet = params.get("planet", "Unknown")
+        self.g = float(self.PLANET_TO_G.get(self.planet, np.nan))
+        self.alpha = params["alpha"]
+        self.theta_0 = params["theta_0"]
+        self.period = params["period"]
+        self.omega = 2 * np.pi / self.period
+
+        # Attributes
+        self.title = params.get("title", "Generated dataset")
+        self.reference = params.get("reference", "")
+        self.z_max = params.get("z_max")
+        self.t_max = params.get("t_max")
+        self.dz = params.get("dz")
+        self.dt = params.get("dt")
+        self.output_interval = params.get("output_interval", 3600)
+        self.is_testcase = params.get("is_testcase", False)
+
+    def to_xarray(self):
+        ds = xr.Dataset(
+            data_vars={
+                "u_bar": (
+                    ("altitude", "time"), self.u_bar,
+                    {"units": "m/s", "description": "Mean slope-parallel wind speed"}
+                ),
+                "theta_bar": (
+                    ("altitude", "time"), self.theta_bar,
+                    {"units": "K", "description": "Potential temperature deviation"}
+                ),
+                "alpha": (
+                    [], self.alpha,
+                    {"units": "deg", "description": "Slope angle (degrees)"}
+                ),
+                "theta_0": (
+                    [], self.theta_0,
+                    {"units": "K", "description": "Reference potential temperature"}
+                ),
+                "omega": (
+                    [], self.omega,
+                    {"units": "1/s", "description": "Planetary angular velocity (computed from period)"}
+                ),
+            },
+            coords={
+                "altitude": (
+                    "altitude", self.altitude,
+                    {"units": "m", "description": "Altitude grid"}
+                ),
+                "time": (
+                    "time", self.time,
+                    {"units": "s", "description": "Time grid"}
+                ),
+            },
+            attrs={
+                "planet": self.planet,
+                "g": f"{self.g:.3f}",
+                "title": self.title,
+                "history": datetime.now().isoformat(),
+                "reference": self.reference,
+                "z_max": self.z_max,
+                "t_max": self.t_max,
+                "dz": self.dz,
+                "dt": self.dt,
+                "output_interval": self.output_interval,
+                "is_testcase": self.is_testcase,
+            }
+        )
+        return ds
+
+    def save(self, path):
+        ds = self.to_xarray()
+        ds.to_netcdf(path)
+        print(f"[INFO] NetCDF saved to: {path}")
