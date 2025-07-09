@@ -16,7 +16,7 @@ class WaveResolutions:
         psi=0.0,
         tmax=86400,
         zmax=10000,
-        dz=5.0,
+        dz=20.0,
         dt=3600.0,
     ):
         self.planet = planet
