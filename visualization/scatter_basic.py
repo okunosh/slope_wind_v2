@@ -103,6 +103,7 @@ if __name__ == "__main__":
         altitude_array=altitude,
         u_bar=stacked["u_bar"],
         theta_bar=stacked["theta_bar"],
+        K = stacked["K"],
         period=24*3600,
         save_path=None,
         title=None

@@ -48,24 +48,26 @@ def main():
         writer.save(save_path)
 
     # 3. 保存先ディレクトリから全ファイル読み込み
-    varnames = ["u_bar", "theta_bar", "altitude", "time"]
+    varnames = ["u_bar", "theta_bar", "altitude", "time", "K"]
     data_list = load_all_data(dir_path, varnames)
     stacked = stack_by_variable(data_list, varnames)
     reshaped_stacked = convert_to_standard_shapes(stacked)
 
     # 4. 可視化
     methods = ["scatter", "pcolormesh"]
-    save_filename = f"time_alt_map_{method}.png"
 
     for method in methods:
+        save_filename = f"time_alt_map_{method}.png"
+        title=f"Analytical solution ({planet}, regime: {flow_regime})"
         plot_ubar_thetabar(
             t_array=reshaped_stacked["time"],
             altitude=reshaped_stacked["altitude"],
             u_bar=reshaped_stacked["u_bar"],
             theta_bar=reshaped_stacked["theta_bar"],
+            K = reshaped_stacked["K"],
             period=params.get("period", 24*3600),
             save_path=os.path.join(dir_path, save_filename),
-            title=f"Analytical solution ({planet}, regime: {flow_regime})",
+            title=title,
             method=method
         )
 
