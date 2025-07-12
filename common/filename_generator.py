@@ -15,12 +15,12 @@ def results_or_tests_dir(is_testcase: bool) -> str:
 def zero_pad_time(t):
     return f"{int(t):06d}"
 
-def make_dir_and_filename(params, mode, flow_regime, current_time):
+def make_dir_and_filename(params, mode, flow_regime, current_time, date_str):
     """
     is_testcaseによってtests/resultsに分岐
     output/Analytical/ver01/tests(Earth...)/... または results/...
     """
-    date_str = nowstr()
+    #date_str = nowstr()
     planet = params.get("planet", "Unknown")
     user_subdir = params.get("output", "run")  # "ver01"など
     is_testcase = params.get("is_testcase", False)

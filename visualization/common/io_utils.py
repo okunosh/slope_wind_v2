@@ -25,6 +25,8 @@ def load_all_data(directory, varnames):
     指定した変数(varnames)を欠損時はnp.nanで埋めて辞書のリストで返す。
     """
     files_sorted = list_netcdf_files_sorted(directory)
+    #print(files_sorted)
+    
     data_list = []
     for fname in files_sorted:
         ds = xr.open_dataset(os.path.join(directory, fname))
@@ -45,6 +47,8 @@ def stack_by_variable(data_list, varnames):
     変数ごとの2次元配列（[ファイル数, ...shape]）に変換して返すdict。
     欠損（np.nan）が混じる場合は型やshapeに注意（object型で返る場合も）。
     """
+    #print(data_list)
+    #input("stop")
     result = {}
     for v in varnames:
         # ファイルごとに該当変数をリストアップ

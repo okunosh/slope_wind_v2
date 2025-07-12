@@ -11,8 +11,9 @@ class WaveResolutions:
         Theta,
         theta_0,
         gamma,
-        omega,
+        period,
         K,
+        is_testcase,
         psi=0.0,
         tmax=86400,
         zmax=10000,
@@ -26,7 +27,7 @@ class WaveResolutions:
         self.Theta = Theta
         self.theta_0 = theta_0
         self.gamma = gamma
-        self.omega = omega
+        self.omega = 2*np.pi / period
         self.K = K
         self.psi = psi
         self.tmax = tmax
@@ -98,25 +99,24 @@ class WaveResolutions:
                 np.exp(-z / l_plus) * np.sin(omega_t - z / l_plus + psi)
                 + np.exp(-z / l_minus) * np.sin(omega_t + z / l_minus + psi)
             )
-
-         return {
-             "planet": self.planet,
-             "g": self.g,
-             "alpha_deg": self.alpha_deg,
-             "Theta": self.Theta,
-             "theta_0": self.theta_0,
-             "gamma": np.full(self.nt, self.gamma),  # (time,)で保存
-             "K": np.full(self.nt, self.K),          # (time,)
-             "N": np.full(self.nt, self.N),          # (time,)
-             "N_alpha": np.full(self.nt, self.N_alpha),  # (time,)
-             "omega_plus": np.full(self.nt, self.omega_plus),  # (time,)
-             "omega_minus": np.full(self.nt, self.omega_minus), # (time,)
-             "l_plus": np.full(self.nt, self.l_plus),          # (time,)
-             "l_minus": np.full(self.nt, self.l_minus),        # (time,)
-             "psi": np.full(self.nt, self.psi),    # (time,)
-             "altitude": self.altitude,
-             "time": self.time,
-             "u_bar": u_bar,
-             "theta_bar": theta_bar,
-             "regime": regime
-         }
+        return {
+            "planet": self.planet,
+            "g": self.g,
+            "alpha_deg": self.alpha_deg,
+            "Theta": self.Theta,
+            "theta_0": self.theta_0,
+            "gamma": np.full(self.nt, self.gamma),  # (time,)で保存
+            "K": np.full(self.nt, self.K),          # (time,)
+            "N": np.full(self.nt, self.N),          # (time,)
+            "N_alpha": np.full(self.nt, self.N_alpha),  # (time,)
+            "omega_plus": np.full(self.nt, self.omega_plus),  # (time,)
+            "omega_minus": np.full(self.nt, self.omega_minus), # (time,)
+            "l_plus": np.full(self.nt, self.l_plus),          # (time,)
+            "l_minus": np.full(self.nt, self.l_minus),        # (time,)
+            "psi": np.full(self.nt, self.psi),    # (time,)
+            "altitude": self.altitude,
+            "time": self.time,
+            "u_bar": u_bar,
+            "theta_bar": theta_bar,
+            "regime": regime
+        }

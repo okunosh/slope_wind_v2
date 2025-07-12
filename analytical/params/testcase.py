@@ -2,15 +2,17 @@
 
 params = {
     "planet": "Earth",
-    "alpha_deg": 1.0,
+    "period": 86400,
+    "alpha_deg": 0.41,
     "Theta": 5,
     "theta_0": 288,
     "gamma": 0.003,
-    "K": 3.0,
+    "K": 30,
     "psi": 0.0,
-    "tmax": 3600*24,    # 1時間
-    "zmax": 300,     # 200m
-    "dt": 3600*3,       # 3h刻み
-    "dz": 20,        # 20m刻み
-    "output": "/home/okuno/2026M_okuno/slopeWind_v2/output/initial_test"
+    "tmax": 3600*24,    # 24時間
+    "zmax": 500*20,     # 1km
+    "dt": 3600*1,       # 1h刻み
+    "dz": 5,        # 20m刻み
+    "output": "initial_test",
+    "is_testcase": True
 }
