@@ -69,6 +69,47 @@ def stack_by_variable(data_list, varnames):
             result[v] = np.stack(arr)
     return result
 
+def convert_to_standard_shapes(stacked, var_time="time", var_alt="altitude"):
+    """
+    stacked: stack_by_variableの出力dict
+    各変数を1次元or2次元配列に揃えて返す
+    """
+    result = {}
+    # 時間
+    t_array = stacked[var_time]
+    if t_array.ndim == 2:
+        t_array = np.squeeze(t_array)  # (nt,)
+    result["time"] = t_array
+
+    # 高度
+    altitude = stacked[var_alt]
+    if altitude.ndim == 2 and altitude.shape[0] == t_array.shape[0]:
+        # (nt, nz)のとき、各行が同じなら1行目を使う
+        if np.allclose(altitude, altitude[0, :]):
+            altitude = altitude[0, :]
+        else:
+            # 時間依存の場合はそのまま
+            pass
+    elif altitude.ndim == 2 and altitude.shape[1] == t_array.shape[0]:
+        altitude = altitude[:, 0]
+    else:
+        altitude = np.squeeze(altitude)
+    result["altitude"] = altitude
+
+    # その他の変数（u_bar, theta_bar など）
+    for key in stacked:
+        if key in [var_time, var_alt]:
+            continue
+        arr = stacked[key]
+        arr = np.squeeze(arr)
+        # 3次元なら (nt, nz, 1) → (nt, nz)
+        if arr.ndim == 3 and arr.shape[2] == 1:
+            arr = arr[:, :, 0]
+        result[key] = arr
+
+    return result
+
+
 def select_range(
     stacked_vars,
     varname,
