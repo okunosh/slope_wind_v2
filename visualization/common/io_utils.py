@@ -3,9 +3,16 @@ import re
 import numpy as np
 import xarray as xr
 
+"""
 def extract_time_from_filename(filename):
-    """ファイル名からt******部分を抽出（例: _t0345600.nc → 345600）"""
+    ファイル名からt******部分を抽出（例: _t0345600.nc → 345600）
     m = re.search(r'_t(\d{6})\.nc$', filename)
+    return int(m.group(1)) if m else None
+"""
+
+def extract_time_from_filename(filename):
+    """ファイル名からt******部分を抽出（例: A_***_t0342000.nc → 342000）"""
+    m = re.search(r't(\d{6})', filename)
     return int(m.group(1)) if m else None
 
 def list_netcdf_files_sorted(directory):
