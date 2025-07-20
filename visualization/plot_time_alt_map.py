@@ -88,7 +88,7 @@ def plot_ubar_thetabar(
         fig.suptitle(title, fontsize=fontsize_title)
 
     if save_path:
-        plt.savefig(save_path, dpi=300)
+        plt.savefig(save_path, dpi=300, bbox_inches="tight", pad_inches=0.05)
         print(f"Fig is saved: {save_path}")
         plt.close()
     else:
