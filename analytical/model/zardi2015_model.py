@@ -70,7 +70,7 @@ class WaveResolutions:
 
         if regime == "Critical":
             l = np.sqrt(self.K / self.N_alpha)
-            eta = z / (2 * np.sqrt(self.K * t / self.omega + 1e-12))
+            eta = z / (2 * np.sqrt(self.K * t + 1e-12))
             u_bar = self.const_u * (
                 np.exp(-z / l) * np.cos(omega_t - z / l + psi)
                 - erfc(eta) * np.cos(omega_t + psi)
