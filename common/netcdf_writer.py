@@ -16,14 +16,16 @@ class DatasetToNetcdf:
 
     def __init__(self, results: dict, params: dict):
         # Required main variables
+        self.results = results
         self.u_bar = results["u_bar"]
         self.theta_bar = results["theta_bar"]
         self.altitude = results["altitude"]
         self.time = results["time"]
+        #print("self.time in netcdf_writer", self.time)
 
         self.planet = params.get("planet", "Undefined")
         self.g = float(self.PLANET_TO_G.get(self.planet, np.nan))
-        self.alpha = params["alpha"]
+        self.alpha_deg = params["alpha_deg"]
         self.theta_0 = params["theta_0"]
         self.period = params["period"]
         self.omega = 2 * np.pi / self.period
@@ -31,12 +33,12 @@ class DatasetToNetcdf:
         # Attributes
         self.title = params.get("title", "Generated dataset")
         self.reference = params.get("reference", "Undefined")
-        self.z_max = params.get("z_max")
-        self.t_max = params.get("t_max")
-        self.dz = params.get("dz")
-        self.dt = params.get("dt")
-        self.output_interval = params.get("output_interval", 3600)
-        self.is_testcase = params.get("is_testcase", False)
+        self.z_max = float(params.get("z_max", np.nan))
+        self.t_max = float(params.get("t_max", np.nan))
+        self.dz = float(params.get("dz", np.nan))
+        self.dt = float(params.get("dt", np.nan))
+        self.output_interval = float(params.get("output_interval", 3600))
+        self.is_testcase = str(params.get("is_testcase", False))
 
     def to_xarray(self):
         ds = xr.Dataset(
@@ -50,7 +52,7 @@ class DatasetToNetcdf:
                     {"units": "K", "description": "Potential temperature anomaly"}
                 ),
                 "alpha": (
-                    [], self.alpha,
+                    [], self.alpha_deg,
                     {"units": "deg", "description": "Slope angle (degrees)"}
                 ),
                 "theta_0": (
@@ -91,4 +93,4 @@ class DatasetToNetcdf:
     def save(self, path):
         ds = self.to_xarray()
         ds.to_netcdf(path)
-        print(f"[INFO] NetCDF saved to: {path}")
+        #print(f"[INFO] NetCDF saved to: {path}")
