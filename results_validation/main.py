@@ -118,7 +118,7 @@ def main():
             extrema_old_u, extrema_new_u,
             extrema_old_theta, extrema_new_theta,
             z_altitude=new_vars["altitude"],
-            cmap="bwr",
+            cmap="coolwarm",
             save_path=os.path.join(save_dir, "extrema_scatter.png")
         )
         print(f"[INFO] Extrema figure saved to: {save_dir}")

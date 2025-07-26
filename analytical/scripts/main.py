@@ -1,6 +1,7 @@
 import os
 import numpy as np
-from analytical.params.testcase import params
+import argparse
+from common.multiple_params_loader import load_multiple_params
 from analytical.model.zardi2015_model import WaveResolutions
 from analytical.data_definition.analytical_netcdf_writer import AnalyticalNetcdfWriter
 from common.netcdf_writer import DatasetToNetcdf
@@ -8,14 +9,14 @@ from common.filename_generator import make_dir_and_filename, nowstr
 from visualization.common.io_utils import load_all_data, stack_by_variable, convert_to_standard_shapes
 from visualization.plot_time_alt_map import plot_ubar_thetabar
 
-def main():
+def run_single_case(config_path, params):
     params_model = {k: v for k, v in params.items() if k != "output"}
     # 1. モデル計算
     model = WaveResolutions(**params_model)
     results = model.solve()   # 全時刻・高度分の2次元配列、1次元時系列配列
 
     times = results["time"]
-    print("times: ", times)
+    #print("times: ", times)
     nt = len(times)
     output_root = params["output_root"] if "output_root" in params else params["output"]
     planet = params["planet"]
@@ -23,6 +24,8 @@ def main():
     date_str = nowstr()
 
     # 2. 1時間(or dtごと)のデータをNetCDF保存
+    print("saving results to netcdf...")
+    
     for i, t_now in enumerate(times):
         # 1時刻分を抽出
         
@@ -46,8 +49,10 @@ def main():
         # 保存
         writer = AnalyticalNetcdfWriter(single_result, params)
         writer.save(save_path)
-
+    
     # 3. 保存先ディレクトリから全ファイル読み込み
+    print("making figures...")
+    
     varnames = ["u_bar", "theta_bar", "altitude", "time", "K"]
     data_list = load_all_data(dir_path, varnames)
     stacked = stack_by_variable(data_list, varnames)
@@ -70,6 +75,19 @@ def main():
             title=title,
             method=method
         )
+
+def main():
+    parser = argparse.ArgumentParser(description="execute analytical model calculation with multiple parms")
+    parser.add_argument(
+        "parameter_files",
+        nargs="+",
+        help="params files in analytical/params/, DO NOT include directory! ONLY filename",
+    )
+    args = parser.parse_args()
+    
+    for config_path, params in load_multiple_params(args.parameter_files, "analytical/params"):
+        print(f"[INFO] start {config_path}")
+        run_single_case(config_path, params)
 
 if __name__ == "__main__":
     main()
